@@ -6,7 +6,7 @@ import {createShowMoreBtnTemplate} from './view/show-more-btn-view.js';
 import {createFilmsCardsTemplate} from './view/films-cards-view.js';
 import {createAdditionalFilmInfoPopupTemplate} from './view/additional-info-popup-view.js';
 
-const TASK_COUNT  = 5;
+const TASK_COUNT = 5;
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
