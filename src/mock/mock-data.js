@@ -117,7 +117,8 @@ const generateGenre = () => {
     'Western',
     'Documentary'
   ];
-  return genres[getRandomInt(0, genres.length - 1)];
+  const randomGenre = shuffleArray(genres).slice(0, 3);
+  return randomGenre.map((item) => item);
 };
 
 const generateFilmData = () => ({

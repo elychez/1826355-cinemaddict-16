@@ -1,6 +1,6 @@
 export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
   const {title, rating, release, length, genre, poster, description, director, screenwriters, actors, country} = mocks;
-  return (`<section class="film-details" style="display: none">
+  return (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -8,7 +8,7 @@ export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src=${poster} alt="">
+          <img class="film-details__poster-img" src="${poster}" alt="">
 
           <p class="film-details__age">18+</p>
         </div>
@@ -53,8 +53,6 @@ export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                <span class="film-details__genre">${genre}</span>
-                <span class="film-details__genre">${genre}</span>
                 <span class="film-details__genre">${genre}</span></td>
             </tr>
           </table>
@@ -163,5 +161,5 @@ export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
       </section>
     </div>
   </form>
-</section>`)
+</section>`);
 };

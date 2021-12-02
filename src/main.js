@@ -31,7 +31,7 @@ if (films.length > FILM_COUNT) {
 
   renderTemplate(siteFilmListContainer, createShowMoreBtnTemplate(), RenderPosition.AFTEREND);
 
-  const loadMoreBtn = document.body.querySelector('.films-list__show-more');
+  const loadMoreBtn = document.querySelector('.films-list__show-more');
 
   loadMoreBtn.addEventListener('click', (evt) => {
     evt.preventDefault();
