@@ -117,8 +117,7 @@ const generateGenre = () => {
     'Western',
     'Documentary'
   ];
-  const randomGenre = shuffleArray(genres).slice(0, 3);
-  return randomGenre.map((item) => item);
+  return shuffleArray(genres).slice(0, 2);
 };
 
 const generateFilmData = () => ({
@@ -133,7 +132,7 @@ const generateFilmData = () => ({
   release: '01 April 1995',
   length: '1h 36m',
   country: generateCountry(),
-  genre: generateGenre(),
+  genres: generateGenre(),
   ageRating: getRandomInt(0, 18),
 });
 

@@ -1,5 +1,7 @@
-export const createFilmsCardsTemplate = (mocks) => {
-  const {title, rating, release, length, genre, poster, description, comment} = mocks;
+import {createElement} from '../render.js';
+
+const createFilmsCardsTemplate = (mocks) => {
+  const {title, rating, release, length, genres, poster, description, comment} = mocks;
 
   return (`<article class="film-card">
           <a class="film-card__link">
@@ -8,7 +10,7 @@ export const createFilmsCardsTemplate = (mocks) => {
             <p class="film-card__info">
               <span class="film-card__year">${release}</span>
               <span class="film-card__duration">${length}</span>
-              <span class="film-card__genre">${genre}</span>
+              <span class="film-card__genre">${genres}</span>
             </p>
             <img src="${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
@@ -21,3 +23,28 @@ export const createFilmsCardsTemplate = (mocks) => {
           </div>
         </article>`);
 };
+
+export default class FilmsCardsView {
+  #element = null;
+  #mocks = null;
+
+  constructor(mocks) {
+    this.#mocks = mocks;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmsCardsTemplate(this.#mocks);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

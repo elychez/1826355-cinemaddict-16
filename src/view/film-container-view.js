@@ -1,9 +1,12 @@
-export const createFilmContainerTemplate = () => (
-  `<ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button">Sort by rating</a></li>
-  </ul>
+import {createElement} from '../render';
+
+const createFilmContainerTemplate = () => (
+  `<div>
+    <ul class="sort">
+        <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
+        <li><a href="#" class="sort__button">Sort by date</a></li>
+        <li><a href="#" class="sort__button">Sort by rating</a></li>
+      </ul>
 
   <section class="films">
     <section class="films-list">
@@ -12,5 +15,26 @@ export const createFilmContainerTemplate = () => (
       <div class="films-list__container">
       </div>
     </section>
-  </section>`
+  </section>
+</div>`
 );
+
+export default class FilmContainerView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmContainerTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

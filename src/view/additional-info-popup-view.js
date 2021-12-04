@@ -1,5 +1,7 @@
-export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
-  const {title, rating, release, length, genre, poster, description, director, screenwriters, actors, country} = mocks;
+import {createElement} from '../render.js';
+
+const createAdditionalFilmInfoPopupTemplate = (mock) => {
+  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country} = mock;
   return (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -53,7 +55,7 @@ export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                <span class="film-details__genre">${genre}</span></td>
+                ${genres.map((genre) => `<span class="film-details__genre">${genre}</span>`)}</td>
             </tr>
           </table>
 
@@ -163,3 +165,28 @@ export const createAdditionalFilmInfoPopupTemplate = (mocks) => {
   </form>
 </section>`);
 };
+
+export default class AdditionalInfoPopupView {
+  #element = null;
+  #mock = null;
+
+  constructor(mock) {
+    this.#mock = mock;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createAdditionalFilmInfoPopupTemplate(this.#mock);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
