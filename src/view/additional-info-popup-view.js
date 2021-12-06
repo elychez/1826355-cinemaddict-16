@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createAdditionalFilmInfoPopupTemplate = (mock) => {
   const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country} = mock;
@@ -166,27 +166,25 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
 </section>`);
 };
 
-export default class AdditionalInfoPopupView {
-  #element = null;
+export default class AdditionalInfoPopupView extends AbstractView {
   #mock = null;
 
   constructor(mock) {
+    super();
     this.#mock = mock;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createAdditionalFilmInfoPopupTemplate(this.#mock);
   }
 
-  removeElement() {
-    this.#element = null;
+  setPopupCloseBtnHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#popupCloseBtnHandler);
+  }
+
+  #popupCloseBtnHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }

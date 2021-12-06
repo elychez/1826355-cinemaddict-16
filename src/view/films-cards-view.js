@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createFilmsCardsTemplate = (mocks) => {
   const {title, rating, release, length, genres, poster, description, comment} = mocks;
@@ -24,27 +24,25 @@ const createFilmsCardsTemplate = (mocks) => {
         </article>`);
 };
 
-export default class FilmsCardsView {
-  #element = null;
+export default class FilmsCardsView extends AbstractView {
   #mocks = null;
 
   constructor(mocks) {
+    super();
     this.#mocks = mocks;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmsCardsTemplate(this.#mocks);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
