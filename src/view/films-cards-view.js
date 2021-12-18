@@ -1,7 +1,11 @@
 import AbstractView from './abstract-view.js';
 
 const createFilmsCardsTemplate = (mocks) => {
-  const {title, rating, release, length, genres, poster, description, comment} = mocks;
+  const {title, rating, release, length, genres, poster, description, comment, isInWatchlist, isWatched, isInFavorites} = mocks;
+  const addStatus = (status) => {
+    const statusType = status === true ? '--active' : '';
+    return `film-card__controls-item${statusType}`;
+  };
 
   return (`<article class="film-card">
           <a class="film-card__link">
@@ -17,9 +21,9 @@ const createFilmsCardsTemplate = (mocks) => {
             <span class="film-card__comments">${comment.length} comments</span>
           </a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
+            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${addStatus(isInWatchlist)}" type="button">Add to watchlist</button>
+            <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${addStatus(isWatched)}" type="button">Mark as watched</button>
+            <button class="film-card__controls-item film-card__controls-item--favorite ${addStatus(isInFavorites)}" type="button">Mark as favorite</button>
           </div>
         </article>`);
 };
@@ -38,11 +42,38 @@ export default class FilmsCardsView extends AbstractView {
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.film-card__comments').addEventListener('click', this.#clickHandler);
   }
 
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
+  }
+
+  #isInWatchlistHandler = () => {
+    this._callbackWatchlist.click();
+  }
+
+  #isWatchedHandler = () => {
+    this._callbackWatched.click();
+  }
+
+  #isInFavoritesHandler = () => {
+    this._callbackInFavorites.click();
+  }
+
+  setWatchedHandler(callback) {
+    this._callbackWatched.click = callback;
+    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#isWatchedHandler);
+  }
+
+  setWatchlistHandler(callback) {
+    this._callbackWatchlist.click = callback;
+    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.#isInWatchlistHandler);
+  }
+
+  setFavoritesHandler(callback) {
+    this._callbackInFavorites.click = callback;
+    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#isInFavoritesHandler);
   }
 }

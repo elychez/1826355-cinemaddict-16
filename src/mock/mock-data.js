@@ -22,6 +22,12 @@ const shuffleArray = function (data) {
   return array;
 };
 
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //Максимум и минимум включаются
+}
+
 const generateFilmTitle = () => {
   const titles = [
     'The Dance of Life',
@@ -120,6 +126,8 @@ const generateGenre = () => {
   return shuffleArray(genres).slice(0, 2);
 };
 
+const generateFlag = () => Boolean(getRandomIntInclusive(0, 1));
+
 const generateFilmData = () => ({
   title: generateFilmTitle(),
   poster: generateFilmPoster(),
@@ -134,6 +142,9 @@ const generateFilmData = () => ({
   country: generateCountry(),
   genres: generateGenre(),
   ageRating: getRandomInt(0, 18),
+  isInWatchlist: generateFlag(),
+  isWatched: generateFlag(),
+  isInFavorites: generateFlag(),
 });
 
 export const getFilmsData = () => new Array(getRandomInt(3, 5) * 5).fill({}).map(generateFilmData);
