@@ -1,7 +1,11 @@
 import AbstractView from './abstract-view.js';
 
 const createAdditionalFilmInfoPopupTemplate = (mock) => {
-  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country} = mock;
+  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites} = mock;
+  const addStatus = (status) => {
+    const statusType = status === true ? '--active' : '';
+    return `film-details__control-button${statusType}`;
+  };
   return (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -66,9 +70,9 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button ${addStatus(isInWatchlist)} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button ${addStatus(isWatched)} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button ${addStatus(isInFavorites)} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -186,5 +190,38 @@ export default class AdditionalInfoPopupView extends AbstractView {
   #popupCloseBtnHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
+  }
+
+  setWatchlistAddedClickHandler = (callback) => {
+    this._callback.watchlistAddedClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistAddedClickHandler);
+  }
+
+  setWatchedClickHandler = (callback) => {
+    this._callback.watchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
+  }
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+  }
+
+  #watchlistAddedClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchlistAddedClick();
+    this.element.querySelector('.film-details__control-button--watchlist').classList.toggle('film-details__control-button--active');
+  }
+
+  #watchedClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchedClick();
+    this.element.querySelector('.film-details__control-button--watched').classList.toggle('film-details__control-button--active');
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+    this.element.querySelector('.film-details__control-button--favorite').classList.toggle('film-details__control-button--active');
   }
 }

@@ -1,3 +1,5 @@
+import {nanoid} from "nanoid";
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -129,6 +131,7 @@ const generateGenre = () => {
 const generateFlag = () => Boolean(getRandomIntInclusive(0, 1));
 
 const generateFilmData = () => ({
+  id: nanoid(),
   title: generateFilmTitle(),
   poster: generateFilmPoster(),
   description: generateFilmDescription(),

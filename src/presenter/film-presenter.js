@@ -6,6 +6,8 @@ import LoadMoreBtnView from '../view/show-more-btn-view.js';
 import SiteMenuView from '../view/site-filter-view.js';
 import UserRankView from '../view/user-rank-view.js';
 import {render, RenderPosition} from '../render.js';
+import cardPresenter from "./card-presenter";
+import {updateItem} from "../utils/utils";
 
 const FILM_COUNT = 5;
 
@@ -19,6 +21,8 @@ export default class FilmPresenter {
   #emptyListComponent = new NoFilmsView();
   #filterComponent = new SiteMenuView();
   #rankComponent = new UserRankView();
+
+  #filmPresenter = new Map();
 
   filmsCards = [];
 
@@ -44,41 +48,11 @@ export default class FilmPresenter {
     render(this.#siteMain, this.#filterComponent, RenderPosition.AFTERBEGIN);
   }
 
-  #renderCard = (film) => {
-    this.#film = film;
-
-    const filmCardComponent = new FilmsCardsView(this.#film);
-    const filmPopupComponent = new AdditionalInfoPopupView(this.#film);
-    const removePopup = () => {
-      document.body.removeChild(filmPopupComponent.element);
-      document.body.classList.remove('hide-overflow');
-    };
-
-    const onKeyDownClosePopup = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        removePopup();
-        document.removeEventListener('keydown', onKeyDownClosePopup);
-      }
-    };
-
-    render(this.#filmContainer, filmCardComponent, RenderPosition.BEFOREEND);
-    filmCardComponent.setClickHandler(() => {
-      document.body.appendChild(filmPopupComponent.element);
-      document.body.classList.add('hide-overflow');
-      document.addEventListener('keydown', onKeyDownClosePopup);
-    });
-
-    filmPopupComponent.setPopupCloseBtnHandler(() => {
-      removePopup();
-    });
-
-    filmCardComponent.setFavoritesHandler(this.#handleFavoriteClick());
-  }
-
   #renderCards = () => {
     this.filmsCards.slice(0, 5).forEach((film) => {
-      this.#renderCard(film);
+      const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer);
+      filmCardPresenter.init(film);
+      this.#filmPresenter.set(film.id, filmCardPresenter);
     });
   }
 
@@ -105,7 +79,9 @@ export default class FilmPresenter {
         this.filmsCards
           .slice(renderFilmCount, renderFilmCount + FILM_COUNT)
           .forEach((film) => {
-            this.#renderCard(film);
+            const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer);
+            filmCardPresenter.init(film);
+            this.#filmPresenter.set(film.id, filmCardPresenter);
           });
 
         renderFilmCount += FILM_COUNT;
@@ -117,7 +93,8 @@ export default class FilmPresenter {
     }
   }
 
-  #handleFavoriteClick = () => {
-    // this.#film = Object.assign({}, this.#film, {isInFavorites: this.#film.isInFavorites});
+  #handleFilmChange = (updatedTask) => {
+    this.filmsCards = updateItem(this.filmsCards, updatedTask);
+    this.#filmPresenter.get(updatedTask.id).init(updatedTask);
   }
 }
