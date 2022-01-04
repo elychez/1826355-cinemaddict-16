@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view';
 
 const createAdditionalFilmInfoPopupTemplate = (mock) => {
   const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites} = mock;
@@ -170,7 +170,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
 </section>`);
 };
 
-export default class AdditionalInfoPopupView extends AbstractView {
+export default class AdditionalInfoPopupView extends SmartView {
   #mock = null;
 
   constructor(mock) {
@@ -223,5 +223,16 @@ export default class AdditionalInfoPopupView extends AbstractView {
     evt.preventDefault();
     this._callback.favoriteClick();
     this.element.querySelector('.film-details__control-button--favorite').classList.toggle('film-details__control-button--active');
+  }
+
+  reset = (task) => {
+    this.updateData(task);
+  }
+
+  restoreHandlers = () => {
+    this.setFavoriteClickHandler(this.#favoriteClickHandler);
+    this.setWatchedClickHandler(this.#watchedClickHandler);
+    this.setWatchlistAddedClickHandler(this.#watchlistAddedClickHandler);
+    this.setPopupCloseBtnHandler(this._callback.click);
   }
 }

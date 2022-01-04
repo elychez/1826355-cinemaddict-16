@@ -1,4 +1,4 @@
-import {nanoid} from "nanoid";
+import {nanoid} from 'nanoid';
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);

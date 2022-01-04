@@ -1,13 +1,11 @@
-import AdditionalInfoPopupView from '../view/additional-info-popup-view.js';
 import FilmContainerView from '../view/film-container-view.js';
-import FilmsCardsView from '../view/films-cards-view.js';
 import NoFilmsView from '../view/no-films-view.js';
 import LoadMoreBtnView from '../view/show-more-btn-view.js';
 import SiteMenuView from '../view/site-filter-view.js';
 import UserRankView from '../view/user-rank-view.js';
 import {render, RenderPosition} from '../render.js';
-import cardPresenter from "./card-presenter";
-import {updateItem} from "../utils/utils";
+import cardPresenter from './card-presenter.js';
+import {updateItem} from '../utils/utils.js';
 
 const FILM_COUNT = 5;
 
@@ -50,7 +48,7 @@ export default class FilmPresenter {
 
   #renderCards = () => {
     this.filmsCards.slice(0, 5).forEach((film) => {
-      const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer);
+      const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer, this.#handleModeChange);
       filmCardPresenter.init(film);
       this.#filmPresenter.set(film.id, filmCardPresenter);
     });
@@ -79,7 +77,7 @@ export default class FilmPresenter {
         this.filmsCards
           .slice(renderFilmCount, renderFilmCount + FILM_COUNT)
           .forEach((film) => {
-            const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer);
+            const filmCardPresenter = new cardPresenter(this.#handleFilmChange, this.#filmContainer, this.#handleModeChange);
             filmCardPresenter.init(film);
             this.#filmPresenter.set(film.id, filmCardPresenter);
           });
@@ -96,5 +94,9 @@ export default class FilmPresenter {
   #handleFilmChange = (updatedTask) => {
     this.filmsCards = updateItem(this.filmsCards, updatedTask);
     this.#filmPresenter.get(updatedTask.id).init(updatedTask);
+  }
+
+  #handleModeChange = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.resetView());
   }
 }
