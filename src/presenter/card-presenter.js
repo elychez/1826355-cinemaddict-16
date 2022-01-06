@@ -23,7 +23,7 @@ export default class cardPresenter {
     this.#modeChange = changeMode;
   }
 
-  init = (film) => {
+  init(film) {
     this.#film = film;
     const prevFilmCardComponent = this.#filmCardComponent;
     const prevPopupComponent = this.#filmPopupComponent;

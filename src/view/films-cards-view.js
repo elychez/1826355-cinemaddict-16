@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view.js';
+import dayjs from 'dayjs';
 
 const createFilmsCardsTemplate = (mocks) => {
   const {title, rating, release, length, genres, poster, description, comment, isInWatchlist, isWatched, isInFavorites} = mocks;
@@ -7,12 +8,14 @@ const createFilmsCardsTemplate = (mocks) => {
     return `film-card__controls-item${statusType}`;
   };
 
+  const formattedDate = dayjs(release).format('DD MMMM YYYY');
+
   return (`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
             <p class="film-card__rating">${rating}</p>
             <p class="film-card__info">
-              <span class="film-card__year">${release}</span>
+              <span class="film-card__year">${formattedDate}</span>
               <span class="film-card__duration">${length}</span>
               <span class="film-card__genre">${genres}</span>
             </p>

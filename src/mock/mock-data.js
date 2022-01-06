@@ -1,19 +1,20 @@
 import {nanoid} from 'nanoid';
+import dayjs from 'dayjs';
 
-function getRandomInt(min, max) {
+const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
-}
+};
 
-const getRandomArbitrary = function (min, max, float) {
+const getRandomArbitrary = (min, max, float) => {
   if (min >= 0 && max >= min) {
     const randomNumber = Math.random() * (max - min) + min;
     return randomNumber.toFixed(float);
   }
 };
 
-const shuffleArray = function (data) {
+const shuffleArray = (data) => {
   const array = data.slice();
   for (let itt = array.length - 1; itt > 0; itt--) {
     const jtt = Math.floor(Math.random() * (itt + 1));
@@ -24,11 +25,11 @@ const shuffleArray = function (data) {
   return array;
 };
 
-function getRandomIntInclusive(min, max) {
+const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min; //Максимум и минимум включаются
-}
+};
 
 const generateFilmTitle = () => {
   const titles = [
@@ -128,6 +129,12 @@ const generateGenre = () => {
   return shuffleArray(genres).slice(0, 2);
 };
 
+const generateDate = () => {
+  const maxDaysGap = 7;
+  const daysGap = getRandomIntInclusive(-maxDaysGap, maxDaysGap);
+  return dayjs().add(daysGap, 'day').toDate();
+};
+
 const generateFlag = () => Boolean(getRandomIntInclusive(0, 1));
 
 const generateFilmData = () => ({
@@ -140,7 +147,7 @@ const generateFilmData = () => ({
   director: generatePeople(1),
   screenwriters: generatePeople(2),
   actors: generatePeople(3),
-  release: '01 April 1995',
+  release: generateDate(),
   length: '1h 36m',
   country: generateCountry(),
   genres: generateGenre(),

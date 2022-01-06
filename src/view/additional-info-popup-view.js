@@ -1,4 +1,5 @@
 import SmartView from './smart-view';
+import dayjs from 'dayjs';
 
 const createAdditionalFilmInfoPopupTemplate = (mock) => {
   const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites} = mock;
@@ -6,6 +7,9 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
     const statusType = status === true ? '--active' : '';
     return `film-details__control-button${statusType}`;
   };
+
+  const formattedDate = dayjs(release).format('DD MMMM YYYY');
+
   return (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -46,7 +50,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${release}</td>
+              <td class="film-details__cell">${formattedDate}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
