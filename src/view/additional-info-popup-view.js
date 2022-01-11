@@ -2,7 +2,7 @@ import SmartView from './smart-view';
 import dayjs from 'dayjs';
 
 const createAdditionalFilmInfoPopupTemplate = (mock) => {
-  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites} = mock;
+  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites, newCommentData} = mock;
   const addStatus = (status) => {
     const statusType = status === true ? '--active' : '';
     return `film-details__control-button${statusType}`;
@@ -140,7 +140,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">  ${newCommentData.emojiName ? `<img src="images/emoji/${newCommentData.emojiName}.png" width="55" height="55" alt="emoji-${newCommentData.emojiName}">` : ''}</div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -175,16 +175,17 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
 };
 
 export default class AdditionalInfoPopupView extends SmartView {
-  #mock = null;
 
   constructor(mock) {
     super();
-    this.#mock = mock;
+    this._data = AdditionalInfoPopupView.parseCardToData(mock);
+    this._setInnerHandlers();
   }
 
   get template() {
-    return createAdditionalFilmInfoPopupTemplate(this.#mock);
+    return createAdditionalFilmInfoPopupTemplate(this._data);
   }
+
 
   setPopupCloseBtnHandler = (callback) => {
     this._callback.click = callback;
@@ -234,9 +235,40 @@ export default class AdditionalInfoPopupView extends SmartView {
   }
 
   restoreHandlers = () => {
+    this._setInnerHandlers();
     this.setFavoriteClickHandler(this.#favoriteClickHandler);
     this.setWatchedClickHandler(this.#watchedClickHandler);
     this.setWatchlistAddedClickHandler(this.#watchlistAddedClickHandler);
     this.setPopupCloseBtnHandler(this._callback.click);
+  }
+
+  static parseCardToData = (card) => ({...card,
+    newCommentData: {
+      emojiName: null,
+    },
+    scrollPosition: null
+  });
+
+  updateElement() {
+    super.updateElement();
+
+    if (this._data.scrollPosition) {
+      this.element.scrollTo(0, this._data.scrollPosition);
+    }
+  }
+
+  _setInnerHandlers() {
+    this.element.querySelectorAll('.film-details__emoji-item').forEach((item) => item.addEventListener('change', this.#emojiClickHandler));
+  }
+
+  #emojiClickHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateData({
+      newCommentData: {
+        emojiName: evt.target.value
+      },
+      scrollPosition: this.element.scrollTop
+    });
   }
 }
