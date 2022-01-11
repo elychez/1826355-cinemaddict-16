@@ -236,9 +236,9 @@ export default class AdditionalInfoPopupView extends SmartView {
 
   restoreHandlers = () => {
     this._setInnerHandlers();
-    this.setFavoriteClickHandler(this.#favoriteClickHandler);
-    this.setWatchedClickHandler(this.#watchedClickHandler);
-    this.setWatchlistAddedClickHandler(this.#watchlistAddedClickHandler);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+    this.setWatchlistAddedClickHandler(this._callback.watchlistAddedClick);
     this.setPopupCloseBtnHandler(this._callback.click);
   }
 
