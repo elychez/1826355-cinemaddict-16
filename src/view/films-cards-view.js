@@ -2,7 +2,7 @@ import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 
 const createFilmsCardsTemplate = (mocks) => {
-  const {title, rating, release, length, genres, poster, description, comment, isInWatchlist, isWatched, isInFavorites} = mocks;
+  const {title, rating, release, length, genres, poster, description, comments, isInWatchlist, isWatched, isInFavorites} = mocks;
   const addStatus = (status) => {
     const statusType = status === true ? '--active' : '';
     return `film-card__controls-item${statusType}`;
@@ -21,7 +21,7 @@ const createFilmsCardsTemplate = (mocks) => {
             </p>
             <img src="${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
-            <span class="film-card__comments">${comment.length} comments</span>
+            <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
             <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${addStatus(isInWatchlist)}" type="button">Add to watchlist</button>

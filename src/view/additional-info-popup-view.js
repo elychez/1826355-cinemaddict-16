@@ -1,8 +1,26 @@
 import SmartView from './smart-view';
 import dayjs from 'dayjs';
+import he from 'he';
+import {CommentAction} from '../const';
 
-const createAdditionalFilmInfoPopupTemplate = (mock) => {
-  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites, newCommentData} = mock;
+const getCommentsContent = (comments) => comments.map(({id, text, emoji, author, data}) =>
+  `<li class="film-details__comment">
+    <span class="film-details__comment-emoji">
+      <img src="./images/emoji/${he.encode(emoji)}.png" width="55" height="55" alt="emoji-${he.encode(emoji)}">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${he.encode(author)}</span>
+        <span class="film-details__comment-day">${he.encode(dayjs(data).format('YYYY/MM/DD HH:mm'))}</span>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
+      </p>
+    </div>
+  </li>`).join('');
+
+
+const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
+  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites, newCommentText, newCommentEmoji} = mock;
   const addStatus = (status) => {
     const statusType = status === true ? '--active' : '';
     return `film-details__control-button${statusType}`;
@@ -82,68 +100,17 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Interesting setting and a good cast</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">Tim Macoveev</span>
-                <span class="film-details__comment-day">2019/12/31 23:59</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji-sleeping">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Booooooooooring</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/puke.png" width="55" height="55" alt="emoji-puke">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Very very old. Meh</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/angry.png" width="55" height="55" alt="emoji-angry">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Almost two hours? Seriously?</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">Today</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-        </ul>
+            ${getCommentsContent(comments)}
+          </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label">  ${newCommentData.emojiName ? `<img src="images/emoji/${newCommentData.emojiName}.png" width="55" height="55" alt="emoji-${newCommentData.emojiName}">` : ''}</div>
+          <div class="film-details__add-emoji-label">  ${newCommentEmoji ? `<img src="images/emoji/${newCommentEmoji}.png" width="55" height="55" alt="emoji-${newCommentEmoji}">` : ''}</div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${ newCommentText ? he.encode(newCommentText) : ''}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -174,78 +141,84 @@ const createAdditionalFilmInfoPopupTemplate = (mock) => {
 </section>`);
 };
 
-export default class AdditionalInfoPopupView extends SmartView {
+export class AdditionalInfoPopupView extends SmartView {
+  #comments = [];
+  #callback = {};
 
-  constructor(mock) {
+  constructor(mock, comments) {
     super();
     this._data = AdditionalInfoPopupView.parseCardToData(mock);
+    this.#comments = comments;
     this._setInnerHandlers();
   }
 
   get template() {
-    return createAdditionalFilmInfoPopupTemplate(this._data);
+    return createAdditionalFilmInfoPopupTemplate(this._data, this.#comments);
   }
 
 
   setPopupCloseBtnHandler = (callback) => {
-    this._callback.click = callback;
+    this.#callback.click = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#popupCloseBtnHandler);
   }
 
   #popupCloseBtnHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this.#callback.click();
   }
 
   setWatchlistAddedClickHandler = (callback) => {
-    this._callback.watchlistAddedClick = callback;
+    this.#callback.watchlistAddedClick = callback;
     this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistAddedClickHandler);
   }
 
   setWatchedClickHandler = (callback) => {
-    this._callback.watchedClick = callback;
+    this.#callback.watchedClick = callback;
     this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
   }
 
   setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
+    this.#callback.favoriteClick = callback;
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
   }
 
   #watchlistAddedClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.watchlistAddedClick();
+    this.#callback.watchlistAddedClick();
     this.element.querySelector('.film-details__control-button--watchlist').classList.toggle('film-details__control-button--active');
   }
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.watchedClick();
+    this.#callback.watchedClick();
     this.element.querySelector('.film-details__control-button--watched').classList.toggle('film-details__control-button--active');
   }
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this.#callback.favoriteClick();
     this.element.querySelector('.film-details__control-button--favorite').classList.toggle('film-details__control-button--active');
   }
 
-  reset = (task) => {
-    this.updateData(task);
+
+  reset = (film) => {
+    this.updateData(
+      AdditionalInfoPopupView.parseCardToData(film)
+    );
   }
 
   restoreHandlers = () => {
     this._setInnerHandlers();
-    this.setFavoriteClickHandler(this._callback.favoriteClick);
-    this.setWatchedClickHandler(this._callback.watchedClick);
-    this.setWatchlistAddedClickHandler(this._callback.watchlistAddedClick);
-    this.setPopupCloseBtnHandler(this._callback.click);
+    this.setFavoriteClickHandler(this.#callback.favoriteClick);
+    this.setWatchedClickHandler(this.#callback.watchedClick);
+    this.setWatchlistAddedClickHandler(this.#callback.watchlistAddedClick);
+    this.setPopupCloseBtnHandler(this.#callback.click);
+    this.setCommentActionHandler(this.#callback.commentAction);
   }
 
   static parseCardToData = (card) => ({...card,
-    newCommentData: {
-      emojiName: null,
-    },
+    newCommentText: '',
+    newCommentEmoji: null,
     scrollPosition: null
   });
 
@@ -259,16 +232,64 @@ export default class AdditionalInfoPopupView extends SmartView {
 
   _setInnerHandlers() {
     this.element.querySelectorAll('.film-details__emoji-item').forEach((item) => item.addEventListener('change', this.#emojiClickHandler));
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   }
 
   #emojiClickHandler = (evt) => {
     evt.preventDefault();
 
     this.updateData({
-      newCommentData: {
-        emojiName: evt.target.value
-      },
+      newCommentEmoji: evt.target.value,
       scrollPosition: this.element.scrollTop
     });
+  }
+
+  setCommentActionHandler = (callback) => {
+    this.#callback.commentAction = callback;
+
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
+      button.addEventListener('click', this.#deleteCommentHandler);
+    });
+  }
+
+  #deleteCommentHandler = (evt) => {
+    evt.preventDefault();
+    const commentId = evt.target.dataset.id;
+    const index = this.#comments.findIndex((comment) => comment.id === commentId);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+    this.#callback.commentAction(CommentAction.DELETE, this.#comments[index]);
+  }
+
+  addCommentHandler = () => {
+    if (this._data.newCommentEmoji === null || this._data.newCommentText.length === 0) {
+      return;
+    }
+
+    const newComment = {
+      filmId: this._data.id,
+      emoji: this._data.newCommentEmoji ? this._data.newCommentEmoji : null,
+      text: this._data.newCommentText,
+      data: '',
+    };
+    this.#callback.commentAction(CommentAction.ADD, newComment);
+  }
+
+  #commentInputHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      newCommentText: evt.target.value,
+      scrollPosition: this.element.scrollTop
+    }, true);
+  }
+
+  static = (data) => {
+    const film = {...data};
+    delete film.newCommentText;
+    delete film.newCommentEmoji;
+
+    return film;
   }
 }

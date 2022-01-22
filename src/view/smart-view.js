@@ -20,13 +20,18 @@ export default class SmartView extends AbstractView {
     this.restoreHandlers();
   }
 
-  updateData(update) {
+  updateData(update, dataUpdate) {
     if (!update) {
       return;
     }
 
     this._data = {...this._data, ...update};
 
+    if (dataUpdate) {
+      return;
+    }
+
     this.updateElement();
   }
+
 }

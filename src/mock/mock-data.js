@@ -98,13 +98,6 @@ const generatePeople = (n) => {
   return randomPeople.slice(0, n);
 };
 
-const generateComment = () => ({
-  emoji: generateRandomEmoji(),
-  data: '2019/12/31 23:59',
-  author: 'user',
-  text: generateFilmDescription(),
-});
-
 const generateCountry = () => {
   const countries = [
     'Portugal',
@@ -137,12 +130,20 @@ const generateDate = () => {
 
 const generateFlag = () => Boolean(getRandomIntInclusive(0, 1));
 
+const generateAllComments = () => {
+  const MIN_COMMENT_COUNT = 0;
+  const MAX_COMMENT_COUNT = 5;
+  const commentCount = getRandomIntInclusive(MIN_COMMENT_COUNT, MAX_COMMENT_COUNT);
+  return Array.from({length: commentCount}, () => nanoid());
+};
+
+
 const generateFilmData = () => ({
   id: nanoid(),
   title: generateFilmTitle(),
   poster: generateFilmPoster(),
   description: generateFilmDescription(),
-  comment: new Array(getRandomInt(0, 10)).fill({}).map(generateComment),
+  comments: generateAllComments(),
   rating: getRandomArbitrary(0, 10, 1),
   director: generatePeople(1),
   screenwriters: generatePeople(2),
@@ -158,3 +159,25 @@ const generateFilmData = () => ({
 });
 
 export const getFilmsData = () => new Array(getRandomInt(3, 5) * 5).fill({}).map(generateFilmData);
+
+export const generateComment = (commentId, filmId) => ({
+  id: commentId,
+  filmId: filmId,
+  emoji: generateRandomEmoji(),
+  data: '2019/12/31 23:59',
+  author: 'user',
+  text: generateFilmDescription(),
+});
+
+export const generateComments = (films) => {
+  const comments = [];
+  films.forEach((film) => {
+    film.comments.forEach((comment) => {
+      comments.push(generateComment(comment, film.id));
+    });
+  });
+
+  return comments;
+};
+
+
