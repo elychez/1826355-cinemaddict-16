@@ -47,6 +47,10 @@ export default class cardPresenter {
     this.#filmCardComponent.setWatchlistAddedClickHandler(this.#handleWatchlistAddedClick);
     this.#filmCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmCardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#filmPopupComponent.setCommentActionHandler(this.#handlerCommentAction);
+    this.#filmPopupComponent.setWatchlistAddedClickHandler(this.#handleWatchlistAddedClick);
+    this.#filmPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
+    this.#filmPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
 
     if (prevFilmCardComponent === null || prevPopupComponent === null) {
@@ -109,10 +113,6 @@ export default class cardPresenter {
   }
 
   #openPopup = () => {
-    this.#filmPopupComponent.setCommentActionHandler(this.#handlerCommentAction);
-    this.#filmPopupComponent.setWatchlistAddedClickHandler(this.#handleWatchlistAddedClick);
-    this.#filmPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
-    this.#filmPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#siteFooter.appendChild(this.#filmPopupComponent.element);
     this.#modeChange();
     this.#mode = Mode.EDITING;
