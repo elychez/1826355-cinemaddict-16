@@ -6,7 +6,7 @@ const createFilterItemTemplate = (filter, currentFilter) => {
   const {type, name, count} = filter;
 
   return (
-    `<a href="#" class="main-navigation__item ${type === currentFilter ? activeClass : ''}" data-filter-type="${type}">
+    `<a href="#" data-menu="${type}" class="main-navigation__item ${type === currentFilter ? activeClass : ''}" data-filter-type="${type}">
       ${name}
       <span class="main-navigation__item-count">${count}</span>
     </a>`
@@ -22,7 +22,7 @@ const createFilterMenuTemplate = (filterItems, currentFilterType) => {
             <div class="main-navigation__items">
                ${filterItemsTemplate}
             </div>
-            <a href="#stats" class="main-navigation__additional">Stats</a>
+            <a href="#stats" data-menu="stats" class="main-navigation__additional ${currentFilterType === 'stats' ? 'main-navigation__additional--active' : ''}"">Stats</a>
           </nav>`;
 };
 
@@ -43,15 +43,13 @@ export default class FilterMenuView extends AbstractView {
 
   setFilterTypeChangeHandler = (callback) => {
     this._callback.filterTypeChange = callback;
-    this.element.addEventListener('click', this.#filterTypeChangeHandler);
+    this.element.querySelectorAll('[data-menu]').forEach((item) => {
+      item.addEventListener('click', this.#filterTypeChangeHandler);
+    });
   }
 
   #filterTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
-      return;
-    }
-
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.filterType);
+    this._callback.filterTypeChange(evt.target.closest('[data-menu]').dataset.menu);
   }
 }

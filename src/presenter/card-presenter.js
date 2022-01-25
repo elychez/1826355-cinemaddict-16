@@ -20,7 +20,6 @@ export default class cardPresenter {
   #mode = Mode.DEFAULT
   #siteFooter = document.querySelector('body');
 
-
   constructor(changeData, filmCardContainer, changeMode, changeComment, commentsModal) {
     this.#changeData = changeData;
     this.#filmContainer = filmCardContainer;
@@ -51,7 +50,6 @@ export default class cardPresenter {
     this.#filmPopupComponent.setWatchlistAddedClickHandler(this.#handleWatchlistAddedClick);
     this.#filmPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-
 
     if (prevFilmCardComponent === null || prevPopupComponent === null) {
       render(this.#filmContainer, this.#filmCardComponent, RenderPosition.BEFOREEND);
@@ -97,13 +95,13 @@ export default class cardPresenter {
 
   #handleWatchedClick = () => {
     const scrollHeight = this.#filmPopupComponent.element.scrollTop;
-    this.#changeData(UpdateType.MINOR ,{...this.#film, isWatched: !this.#film.isWatched});
+    this.#changeData(UpdateType.MINOR, {...this.#film, isWatched: !this.#film.isWatched});
     this.#filmPopupComponent.element.scrollTo(0, scrollHeight);
   }
 
   #handleFavoriteClick = () => {
     const scrollHeight = this.#filmPopupComponent.element.scrollTop;
-    this.#changeData(UpdateType.MINOR,{...this.#film, isInFavorites: !this.#film.isInFavorites});
+    this.#changeData(UpdateType.MINOR, {...this.#film, isInFavorites: !this.#film.isInFavorites});
     this.#filmPopupComponent.element.scrollTo(0, scrollHeight);
   }
 
@@ -138,5 +136,4 @@ export default class cardPresenter {
       this.#filmPopupComponent.addCommentHandler();
     }
   }
-
 }

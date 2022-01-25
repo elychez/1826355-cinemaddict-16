@@ -2,18 +2,23 @@ import {render, RenderPosition, replace, remove} from '../render.js';
 import {FilterType, UpdateType} from '../const.js';
 import FilterMenuView from '../view/site-filter-view';
 import {filter} from '../utils/filters';
+import {ScreenType} from '../const';
 
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #filmsModel = null;
-
   #filterComponent = null;
+  #screenType = ScreenType.FILMS;
+  #handleNavigationClick = () => {};
+  activeItem = FilterType.ALL
 
-  constructor(filterContainer, filterModel, filmsModel) {
+  constructor(filterContainer, filterModel, filmsModel, handleNavClick ) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
+    this.#handleNavigationClick = handleNavClick;
+
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -24,9 +29,9 @@ export default class FilterPresenter {
 
     return [
       {
-        type: FilterType.DEFAULT,
+        type: FilterType.ALL,
         name: 'All',
-        count: filter[FilterType.DEFAULT](films).length,
+        count: filter[FilterType.ALL](films).length,
       },
       {
         type: FilterType.WATCHLIST,
@@ -50,7 +55,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterMenuView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterMenuView(filters, this.activeItem);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
@@ -69,7 +74,7 @@ export default class FilterPresenter {
     this.#filmsModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
 
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.DEFAULT);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
   }
 
   #handleModelEvent = () => {
@@ -80,7 +85,22 @@ export default class FilterPresenter {
     if (this.#filterModel.filter === filterType) {
       return;
     }
+    this.activeItem = filterType;
 
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    const prevScreenType = this.#screenType;
+
+    if (this.filters.some((item) => item.type === filterType)) {
+      this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+      this.#screenType = ScreenType.FILMS;
+    } else {
+      this.#screenType = filterType;
+    }
+
+    if (prevScreenType !== this.#screenType) {
+      this.#handleNavigationClick(this.#screenType);
+    }
+
+    this.init();
+
   }
 }

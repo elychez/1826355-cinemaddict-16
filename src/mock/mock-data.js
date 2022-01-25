@@ -149,13 +149,14 @@ const generateFilmData = () => ({
   screenwriters: generatePeople(2),
   actors: generatePeople(3),
   release: generateDate(),
-  length: '1h 36m',
+  length: getRandomIntInclusive(60, 155),
   country: generateCountry(),
   genres: generateGenre(),
   ageRating: getRandomInt(0, 18),
   isInWatchlist: generateFlag(),
   isWatched: generateFlag(),
   isInFavorites: generateFlag(),
+  watchingDate: new Date(),
 });
 
 export const getFilmsData = () => new Array(getRandomInt(3, 5) * 5).fill({}).map(generateFilmData);

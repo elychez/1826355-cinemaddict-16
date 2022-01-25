@@ -30,7 +30,7 @@ export default class FilmPresenter {
 
   #filmPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
-  #currentFilterType = FilterType.DEFAULT;
+  #currentFilterType = FilterType.ALL;
   #sourcedFilms = [];
   #renderedFilmCount = FILM_COUNT;
 
@@ -198,7 +198,6 @@ export default class FilmPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-
   }
 
   #renderBoard = () => {
@@ -239,12 +238,8 @@ export default class FilmPresenter {
 
   destroy = () => {
     this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
-
-    remove(this.#containerComponent);
-
     this.#filmsModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
     this.#commentsModel.removeObserver(this.#handleCommentEvent);
   }
-
 }
