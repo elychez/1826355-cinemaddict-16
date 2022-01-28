@@ -28,12 +28,12 @@ export default class cardPresenter {
     this.#commentsModel = commentsModal;
   }
 
-  init(film) {
+  async init(film) {
     this.#film = film;
     const prevFilmCardComponent = this.#filmCardComponent;
     const prevPopupComponent = this.#filmPopupComponent;
     this.#filmCardComponent = new FilmsCardsView(film);
-    const filmComments = this.#commentsModel.getCommentsByFilmId(this.#film.id);
+    const filmComments = await this.#commentsModel.getComments(this.#film.id);
     this.#filmPopupComponent = new AdditionalInfoPopupView(film, filmComments);
 
     this.#filmPopupComponent.setPopupCloseBtnHandler(() => {
@@ -89,19 +89,26 @@ export default class cardPresenter {
 
   #handleWatchlistAddedClick = () => {
     const scrollHeight = this.#filmPopupComponent.element.scrollTop;
-    this.#changeData(UpdateType.MINOR, {...this.#film, isInWatchlist: !this.#film.isInWatchlist});
+    this.#changeData(UpdateType.MINOR, {...this.#film, userDetails: {
+      ...this.#film.userDetails,
+      watchlist: !this.#film.userDetails.watchlist}});
     this.#filmPopupComponent.element.scrollTo(0, scrollHeight);
   }
 
   #handleWatchedClick = () => {
     const scrollHeight = this.#filmPopupComponent.element.scrollTop;
-    this.#changeData(UpdateType.MINOR, {...this.#film, isWatched: !this.#film.isWatched});
+    this.#changeData(UpdateType.MINOR, {...this.#film, userDetails: {
+      ...this.#film.userDetails,
+      alreadyWatched: !this.#film.userDetails.alreadyWatched}});
     this.#filmPopupComponent.element.scrollTo(0, scrollHeight);
   }
 
   #handleFavoriteClick = () => {
     const scrollHeight = this.#filmPopupComponent.element.scrollTop;
-    this.#changeData(UpdateType.MINOR, {...this.#film, isInFavorites: !this.#film.isInFavorites});
+    this.#changeData(UpdateType.MINOR, {...this.#film, userDetails: {
+      ...this.#film.userDetails,
+      favorite: !this.#film.userDetails.favorite
+    }});
     this.#filmPopupComponent.element.scrollTo(0, scrollHeight);
   }
 
@@ -127,7 +134,7 @@ export default class cardPresenter {
   }
 
   #handlerCommentAction = (type, comment) => {
-    this.#changeComment(type, UpdateType.MINOR, comment);
+    this.#changeComment(type, UpdateType.MINOR, comment, this.#film);
   }
 
   #ctrlEnterDownHandler = (evt) => {

@@ -2,17 +2,18 @@ import SmartView from './smart-view';
 import dayjs from 'dayjs';
 import he from 'he';
 import {CommentAction} from '../const';
+import {getRunTime} from '../utils/date';
 
-const getCommentsContent = (comments) => comments.map(({id, text, emoji, author, data}) =>
+const getCommentsContent = (comments) => comments.map(({id, comment, emotion, author, date}) =>
   `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${he.encode(emoji)}.png" width="55" height="55" alt="emoji-${he.encode(emoji)}">
+      <img src="./images/emoji/${he.encode(emotion)}.png" width="55" height="55" alt="emoji-${he.encode(emotion)}">
     </span>
     <div>
-      <p class="film-details__comment-text">${he.encode(text)}</p>
+      <p class="film-details__comment-text">${he.encode(comment)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${he.encode(author)}</span>
-        <span class="film-details__comment-day">${he.encode(dayjs(data).format('YYYY/MM/DD HH:mm'))}</span>
+        <span class="film-details__comment-day">${he.encode(dayjs(date).format('YYYY/MM/DD HH:mm'))}</span>
         <button class="film-details__comment-delete" data-id="${id}">Delete</button>
       </p>
     </div>
@@ -20,13 +21,17 @@ const getCommentsContent = (comments) => comments.map(({id, text, emoji, author,
 
 
 const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
-  const {title, rating, release, length, genres, poster, description, director, screenwriters, actors, country, isInWatchlist, isWatched, isInFavorites, newCommentText, newCommentEmoji} = mock;
+  const {title, actors, ageRating, release, description, director, totalRating, genre, runtime, writers, poster } = mock.filmInfo;
+  const {alreadyWatched, favorite, watchlist } = mock.userDetails;
+  const {newCommentText, newCommentEmoji} = mock;
   const addStatus = (status) => {
     const statusType = status === true ? '--active' : '';
     return `film-details__control-button${statusType}`;
   };
 
-  const formattedDate = dayjs(release).format('DD MMMM YYYY');
+  const formattedDate = dayjs(release.date).format('DD MMMM YYYY');
+  const hours = getRunTime(runtime).hours;
+  const minutes = getRunTime(runtime).minutes;
 
   return (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -38,7 +43,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="${poster}" alt="">
 
-          <p class="film-details__age">18+</p>
+          <p class="film-details__age">${ageRating}</p>
         </div>
 
         <div class="film-details__info">
@@ -49,7 +54,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
             </div>
 
             <div class="film-details__rating">
-              <p class="film-details__total-rating">${rating}</p>
+              <p class="film-details__total-rating">${totalRating}</p>
             </div>
           </div>
 
@@ -60,7 +65,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${screenwriters}</td>
+              <td class="film-details__cell">${writers}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
@@ -71,17 +76,17 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
               <td class="film-details__cell">${formattedDate}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${length}</td>
+              <td class="film-details__term">Duration</td>
+              <td class="film-details__cell">${hours} h ${minutes} m</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${country}</td>
+              <td class="film-details__cell">${release.releaseCountry}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                ${genres.map((genre) => `<span class="film-details__genre">${genre}</span>`)}</td>
+                ${genre.map((item) => `<span class="film-details__genre">${item}</span>`)}</td>
             </tr>
           </table>
 
@@ -92,9 +97,9 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button ${addStatus(isInWatchlist)} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button ${addStatus(isWatched)} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button ${addStatus(isInFavorites)} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button ${addStatus(watchlist)} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button ${addStatus(alreadyWatched)} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button ${addStatus(favorite)} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -270,9 +275,10 @@ export class AdditionalInfoPopupView extends SmartView {
 
     const newComment = {
       filmId: this._data.id,
-      emoji: this._data.newCommentEmoji ? this._data.newCommentEmoji : null,
-      text: this._data.newCommentText,
-      data: '',
+      comment: {
+        emotion: this._data.newCommentEmoji ? this._data.newCommentEmoji : null,
+        comment: this._data.newCommentText,
+      }
     };
     this.#callback.commentAction(CommentAction.ADD, newComment);
   }
@@ -283,13 +289,5 @@ export class AdditionalInfoPopupView extends SmartView {
       newCommentText: evt.target.value,
       scrollPosition: this.element.scrollTop
     }, true);
-  }
-
-  static = (data) => {
-    const film = {...data};
-    delete film.newCommentText;
-    delete film.newCommentEmoji;
-
-    return film;
   }
 }

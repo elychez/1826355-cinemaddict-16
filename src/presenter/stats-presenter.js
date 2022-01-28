@@ -29,7 +29,7 @@ export default class StatsPresenter {
   get stats() {
     const films = this.films.filter((film) => isFilmWatchedInPeriod(film, this.#activeFilter));
     const genresStats = getGenresStats(films);
-    const totalDuration = getDuration((films.reduce((prev, film) => prev + film.length, 0)));
+    const totalDuration = getDuration((films.reduce((prev, film) => prev + film.filmInfo.runtime, 0)));
 
     return {
       rank: '',

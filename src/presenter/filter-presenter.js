@@ -26,7 +26,6 @@ export default class FilterPresenter {
 
   get filters() {
     const films = this.#filmsModel.films;
-
     return [
       {
         type: FilterType.ALL,

@@ -1,4 +1,3 @@
-import {generateComments, getFilmsData} from './mock/mock-data.js';
 import FilmPresenter from './presenter/film-presenter.js';
 import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
@@ -6,20 +5,20 @@ import FilterPresenter from './presenter/filter-presenter';
 import CommentsModel from './model/comments-model';
 import StatsPresenter from './presenter/stats-presenter';
 import {ScreenType} from './const';
+import ApiService from './api-service';
 
-const films = getFilmsData();
-// const AUTHORIZATION = 'Basic n45j321mdsff';
-// const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
+const AUTHORIZATION = 'Basic n45j321mdsff';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
+
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 
-const commentsModel = new CommentsModel();
-const filmsModel = new FilmsModel(commentsModel);
+
+const filmsModel = new FilmsModel(apiService);
+const commentsModel = new CommentsModel(apiService, filmsModel);
 const filterModel = new FilterModel();
-filmsModel.films = films;
-const comments = generateComments(films);
-commentsModel.comments = comments;
 
 const filmPresenter = new FilmPresenter(siteHeaderElement, siteMainElement, filmsModel, filterModel, commentsModel);
 
@@ -39,3 +38,7 @@ const handleNavigationClick = (screenType) => {
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel, handleNavigationClick);
 filterPresenter.init();
 filmPresenter.init();
+
+filmsModel.init().finally(() => {
+
+});

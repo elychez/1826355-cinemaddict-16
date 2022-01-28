@@ -14,3 +14,11 @@ export const getDuration = (minutes) => {
     minutes: time.format('m')
   };
 };
+
+export const getRunTime = (minutes) => {
+  const time = dayjs.duration(minutes, 'minutes');
+  return {
+    hours: time.hours(),
+    minutes: time.minutes()
+  };
+};

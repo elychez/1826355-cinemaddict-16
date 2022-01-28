@@ -1,32 +1,37 @@
 import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
+import {getRunTime} from '../utils/date';
 
 const createFilmsCardsTemplate = (mocks) => {
-  const {title, rating, release, length, genres, poster, description, comments, isInWatchlist, isWatched, isInFavorites} = mocks;
+  const { title, release, description, totalRating, genre, runtime, poster } = mocks.filmInfo;
+  const { alreadyWatched, favorite, watchlist } = mocks.userDetails;
+  const { comments } = mocks;
   const addStatus = (status) => {
     const statusType = status === true ? '--active' : '';
     return `film-card__controls-item${statusType}`;
   };
 
-  const formattedDate = dayjs(release).format('DD MMMM YYYY');
+  const formattedDate = dayjs(release.date).format('DD MMMM YYYY');
+  const hours = getRunTime(runtime).hours;
+  const minutes = getRunTime(runtime).minutes;
 
   return (`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
-            <p class="film-card__rating">${rating}</p>
+            <p class="film-card__rating">${totalRating}</p>
             <p class="film-card__info">
               <span class="film-card__year">${formattedDate}</span>
-              <span class="film-card__duration">${length}</span>
-              <span class="film-card__genre">${genres}</span>
+              <span class="film-card__duration">${hours} h ${minutes} m</span>
+              <span class="film-card__genre">${genre}</span>
             </p>
             <img src="${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${addStatus(isInWatchlist)}" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${addStatus(isWatched)}" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite ${addStatus(isInFavorites)}" type="button">Mark as favorite</button>
+            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${addStatus(watchlist)}" type="button">Add to watchlist</button>
+            <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${addStatus(alreadyWatched)}" type="button">Mark as watched</button>
+            <button class="film-card__controls-item film-card__controls-item--favorite ${addStatus(favorite)}" type="button">Mark as favorite</button>
           </div>
         </article>`);
 };
