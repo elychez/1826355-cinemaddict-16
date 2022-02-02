@@ -26,7 +26,7 @@ export const CommentAction = {
 
 export const ScreenType = {
   FILMS: 'films',
-  STATS: 'stats'
+  STATS: 'stats',
 };
 
 export const StatsFilterType = {
@@ -34,5 +34,5 @@ export const StatsFilterType = {
   TODAY: {type: 'today', name: 'Today'},
   WEEK: {type: 'week', name: 'Week'},
   MONTH: {type: 'month', name: 'Month'},
-  YEAR: {type: 'year', name: 'Year'}
+  YEAR: {type: 'year', name: 'Year'},
 };
