@@ -108,7 +108,6 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-            ${getCommentsContent(comments)}
           </ul>
 
         <div class="film-details__new-comment">
@@ -147,18 +146,21 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
 };
 
 export class AdditionalInfoPopupView extends SmartView {
+  #commentsModel = null;
   #comments = [];
   #callback = {};
 
-  constructor(mock, comments) {
+  constructor(mock, commentsModel) {
     super();
     this._data = AdditionalInfoPopupView.parseCardToData(mock);
-    this.#comments = comments;
+    this.#commentsModel = commentsModel;
     this._setInnerHandlers();
+
+    this.drewComments();
   }
 
   get template() {
-    return createAdditionalFilmInfoPopupTemplate(this._data, this.#comments);
+    return createAdditionalFilmInfoPopupTemplate(this._data, this.#comments, this.loading);
   }
 
 
@@ -229,6 +231,7 @@ export class AdditionalInfoPopupView extends SmartView {
 
   updateElement() {
     super.updateElement();
+    this.drewComments();
 
     if (this._data.scrollPosition) {
       this.element.scrollTo(0, this._data.scrollPosition);
@@ -289,5 +292,12 @@ export class AdditionalInfoPopupView extends SmartView {
       newCommentText: evt.target.value,
       scrollPosition: this.element.scrollTop
     }, true);
+  }
+
+  async drewComments() {
+    this.#comments = await this.#commentsModel.getComments(this._data.id);
+    const commentsList = this.element.querySelector('.film-details__comments-list');
+    commentsList.insertAdjacentHTML('beforeend', getCommentsContent(this.#comments));
+    this.setCommentActionHandler(this.#callback.commentAction);
   }
 }

@@ -92,6 +92,7 @@ export default class FilterPresenter {
       this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
       this.#screenType = ScreenType.FILMS;
     } else {
+      this.#filterModel.setFilter(null, filterType);
       this.#screenType = filterType;
     }
 

@@ -178,12 +178,12 @@ export default class FilmPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+      default:
+        break;
     }
   }
 
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
-
-    const filmCount = this.films.length;
 
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
@@ -199,7 +199,7 @@ export default class FilmPresenter {
     if (resetRenderedFilmCount) {
       this.#renderedFilmCount = FILM_COUNT;
     } else {
-
+      const filmCount = this.films.length;
       this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
     }
 
@@ -241,8 +241,8 @@ export default class FilmPresenter {
     this.#handleModelEvent(updateType, this.#filmsModel.getFilmById(data.filmId));
   }
 
-  #handleCommentChange = async (actionType, updateType, update, film) => {
-    await this.#commentsModel.getComments(film.id);
+
+  #handleCommentChange = async (actionType, updateType, update) => {
     switch (actionType) {
       case CommentAction.DELETE:
         await this.#commentsModel.delete(updateType, update.id);

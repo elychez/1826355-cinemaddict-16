@@ -28,13 +28,12 @@ export default class cardPresenter {
     this.#commentsModel = commentsModal;
   }
 
-  async init(film) {
+  init(film) {
     this.#film = film;
     const prevFilmCardComponent = this.#filmCardComponent;
     const prevPopupComponent = this.#filmPopupComponent;
     this.#filmCardComponent = new FilmsCardsView(film);
-    const filmComments = await this.#commentsModel.getComments(this.#film.id);
-    this.#filmPopupComponent = new AdditionalInfoPopupView(film, filmComments);
+    this.#filmPopupComponent = new AdditionalInfoPopupView(film, this.#commentsModel);
 
     this.#filmPopupComponent.setPopupCloseBtnHandler(() => {
       this.#removePopup();
@@ -119,6 +118,7 @@ export default class cardPresenter {
 
   #openPopup = () => {
     this.#siteFooter.appendChild(this.#filmPopupComponent.element);
+    this.#filmPopupComponent.drewComments();
     this.#modeChange();
     this.#mode = Mode.EDITING;
     document.body.classList.add('hide-overflow');
