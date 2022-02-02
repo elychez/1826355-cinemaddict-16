@@ -19,6 +19,6 @@ export const getRunTime = (minutes) => {
   const time = dayjs.duration(minutes, 'minutes');
   return {
     hours: time.hours(),
-    minutes: time.minutes()
+    minutes: time.minutes(),
   };
 };
