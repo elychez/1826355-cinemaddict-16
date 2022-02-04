@@ -1,7 +1,7 @@
 import SmartView from './smart-view';
 import dayjs from 'dayjs';
 import he from 'he';
-import {CommentAction} from '../const';
+import {CommentAction, UpdateType} from '../const';
 import {getRunTime} from '../utils/date';
 
 const getCommentsContent = (comments) => comments.map(({id, comment, emotion, author, date}) =>
@@ -20,7 +20,7 @@ const getCommentsContent = (comments) => comments.map(({id, comment, emotion, au
   </li>`).join('');
 
 
-const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
+const createAdditionalFilmInfoPopupTemplate = (mock, comments, isCommentsLoaded) => {
   const {title, actors, ageRating, release, description, director, totalRating, genre, runtime, writers, poster } = mock.filmInfo;
   const {alreadyWatched, favorite, watchlist } = mock.userDetails;
   const {newCommentText, newCommentEmoji} = mock;
@@ -108,6 +108,7 @@ const createAdditionalFilmInfoPopupTemplate = (mock, comments) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
+        ${isCommentsLoaded ? getCommentsContent(comments) : ''}
           </ul>
 
         <div class="film-details__new-comment">
@@ -149,18 +150,19 @@ export class AdditionalInfoPopupView extends SmartView {
   #commentsModel = null;
   #comments = [];
   #callback = {};
+  #changeData = null;
 
-  constructor(mock, commentsModel) {
+  constructor(mock, commentsModel, changeData) {
     super();
     this._data = AdditionalInfoPopupView.parseCardToData(mock);
     this.#commentsModel = commentsModel;
     this._setInnerHandlers();
+    this.#changeData = changeData;
 
-    this.drewComments();
   }
 
   get template() {
-    return createAdditionalFilmInfoPopupTemplate(this._data, this.#comments, this.loading);
+    return createAdditionalFilmInfoPopupTemplate(this._data, this._data.comments, this.isCommentsLoaded());
   }
 
 
@@ -231,7 +233,6 @@ export class AdditionalInfoPopupView extends SmartView {
 
   updateElement() {
     super.updateElement();
-    this.drewComments();
 
     if (this._data.scrollPosition) {
       this.element.scrollTo(0, this._data.scrollPosition);
@@ -296,8 +297,17 @@ export class AdditionalInfoPopupView extends SmartView {
 
   async drewComments() {
     this.#comments = await this.#commentsModel.getComments(this._data.id);
-    const commentsList = this.element.querySelector('.film-details__comments-list');
-    commentsList.insertAdjacentHTML('beforeend', getCommentsContent(this.#comments));
-    this.setCommentActionHandler(this.#callback.commentAction);
+    this.#changeData(UpdateType.PATCH, {comments: this.#comments});
+    // const commentsList = this.element.querySelector('.film-details__comments-list');
+    // commentsList.insertAdjacentHTML('beforeend', getCommentsContent(this.#comments));
+    // this.setCommentActionHandler(this.#callback.commentAction);
+  }
+
+  onPopupOpen() {
+    this.drewComments();
+  }
+
+  isCommentsLoaded () {
+    return !this._data.comments.every((element) => typeof element === 'string');
   }
 }

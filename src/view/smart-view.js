@@ -33,5 +33,4 @@ export default class SmartView extends AbstractView {
 
     this.updateElement();
   }
-
 }

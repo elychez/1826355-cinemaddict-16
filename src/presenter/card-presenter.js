@@ -33,7 +33,7 @@ export default class cardPresenter {
     const prevFilmCardComponent = this.#filmCardComponent;
     const prevPopupComponent = this.#filmPopupComponent;
     this.#filmCardComponent = new FilmsCardsView(film);
-    this.#filmPopupComponent = new AdditionalInfoPopupView(film, this.#commentsModel);
+    this.#filmPopupComponent = new AdditionalInfoPopupView(film, this.#commentsModel, this.#changeData);
 
     this.#filmPopupComponent.setPopupCloseBtnHandler(() => {
       this.#removePopup();
